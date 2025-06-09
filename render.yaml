@@ -1,10 +1,4 @@
 services:
-  # The PostgreSQL Database service
-  - type: psql
-    name: django-db
-    plan: free
-
-  # The Django Web Service
   - type: web
     name: django-api
     plan: free
@@ -13,13 +7,10 @@ services:
       pip install -r requirements.txt
       python manage.py collectstatic --no-input
       python manage.py migrate
-    startCommand: gunicorn core.wsgi:application  # Ensure 'core' is your Django project folder name
+    startCommand: gunicorn core.wsgi:application  # Replace 'core' if your project folder has a different name
     envVars:
       - key: DATABASE_URL
-        fromService:
-          type: psql
-          name: django-db
-          property: connectionString
+        value: YOUR_DATABASE_URL_HERE  # You must manually set this in Render dashboard
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
