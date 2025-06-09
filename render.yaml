@@ -1,6 +1,5 @@
-# render.yaml
 services:
-  # A PostgreSQL database service
+  # The PostgreSQL Database service
   - type: psql
     name: django-db
     plan: free
@@ -14,11 +13,7 @@ services:
       pip install -r requirements.txt
       python manage.py collectstatic --no-input
       python manage.py migrate
-    # ---------------------------------------------------------------- #
-    # V VERY IMPORTANT: Check this line!
-    # Replace 'core' with the name of the folder that contains your settings.py
-    # ---------------------------------------------------------------- #
-    startCommand: "gunicorn core.wsgi"
+    startCommand: gunicorn core.wsgi:application  # Ensure 'core' is your Django project folder name
     envVars:
       - key: DATABASE_URL
         fromService:
@@ -28,4 +23,4 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
-        value: False
+        value: "False"
