@@ -1,0 +1,31 @@
+# render.yaml
+services:
+  # A PostgreSQL database service
+  - type: psql
+    name: django-db
+    plan: free
+
+  # The Django Web Service
+  - type: web
+    name: django-api
+    plan: free
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --no-input
+      python manage.py migrate
+    # ---------------------------------------------------------------- #
+    # V VERY IMPORTANT: Check this line!
+    # Replace 'core' with the name of the folder that contains your settings.py
+    # ---------------------------------------------------------------- #
+    startCommand: "gunicorn core.wsgi"
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: psql
+          name: django-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
