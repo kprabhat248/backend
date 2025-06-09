@@ -78,15 +78,24 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-### --- STATIC & MEDIA FILES: Configured for production ---
 STATIC_URL = 'static/'
-# This is the directory where `collectstatic` will gather all static files.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# This storage engine helps Whitenoise serve compressed files efficiently.
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# This is the logic that separates your local setup from Render's setup.
+if DEBUG:
+    # --- LOCAL DEVELOPMENT SETTINGS ---
+    # When running locally (DEBUG=True), media files are stored in a simple 'media' folder in your project.
+    # This makes them easy to find and manage during development.
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:
+    # --- RENDER (PRODUCTION) SETTINGS ---
+    # When running on Render (DEBUG=False), media files will be saved to a temporary directory.
+    # Note: These files will be DELETED on every deploy, as the /tmp/ directory is not persistent.
+    MEDIA_ROOT = '/tmp/media'
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.CustomUser'

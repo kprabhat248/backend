@@ -1,4 +1,4 @@
-# your_app/management/commands/create_initial_superuser.py
+# your_app_name/management/commands/create_predefined_superuser.py
 
 import os
 from django.core.management.base import BaseCommand
@@ -7,18 +7,15 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Command(BaseCommand):
-    help = 'Creates an admin user non-interactively if one does not exist'
+    help = 'Creates a superuser with predefined credentials from environment variables'
 
     def handle(self, *args, **options):
-        # Get admin credentials from environment variables
         username = os.environ.get('DJANGO_SUPERUSER_USERNAME')
-        email = os.environ.get('DJANGO_SUPERUSER_EMAIL')
         password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
 
-        if not all([username, email, password]):
+        if not username or not password:
             self.stdout.write(self.style.ERROR(
-                'Missing environment variables: DJANGO_SUPERUSER_USERNAME, '
-                'DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_PASSWORD'
+                'Environment variables DJANGO_SUPERUSER_USERNAME and DJANGO_SUPERUSER_PASSWORD must be set.'
             ))
             return
 
@@ -26,8 +23,8 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Creating superuser '{username}'"))
             User.objects.create_superuser(
                 username=username,
-                email=email,
-                password=password
+                password=password,
+                email=f"{username}@example.com"  # Optional: create a dummy email
             )
         else:
-            self.stdout.write(self.style.WARNING(f"Superuser '{username}' already exists."))
+            self.stdout.write(self.style.WARNING(f"Superuser '{username}' already exists. Skipping creation."))
